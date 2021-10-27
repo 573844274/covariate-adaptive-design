@@ -1,0 +1,47 @@
+library(carat)
+### Refine the ADjBCD
+## Randomize based on the target columns
+myAdjBCD <- function(df, targetCols, a = 2) {
+    Res <- AdjBCD(df[,targetCols], a = 2)
+    assignment = Res$assignments
+    
+    ## strata
+    smallDf = as.matrix(df[,targetCols])
+    levelsNum = apply(smallDf, 2,function(x) length(unique(x)))
+    culLevelsNum = cumprod(c(1,levelsNum))[1:length(levelsNum)]
+    strata = (smallDf - 1) %*% culLevelsNum + 1
+    strata = strata
+    
+    return(list("assignment" = assignment, 
+                "strata" = strata))
+}
+
+### Simulation methods
+simulateDataMa2015 <- function(N, mu1, mu2, beta1, p1, beta2, p2) {
+    ## N: simulated sample size
+    ## mu1: base potential outcome for treatment group
+    ## mu1: base potential outcome for control group
+    ## beta1: coefficient for Z1
+    ## p1: assigenment probability for Z1 = 1
+    ## beta2: coefficient for Z2
+    ## p2: assigenment probability for Z1 = 1
+    
+    ## df: a dataframe of size N, containing Z1, Z2 and potential outcomes 
+    df <- data.frame("Z1" = sample(c(1, 2), N, TRUE, c(p1, 1 - p1)),
+                     "Z2" = sample(c(1, 2), N, TRUE, c(p1, 1 - p2)))
+    error = rnorm(N)
+    df$Y1 = mu1 + beta1 * df$Z1 + beta2 * df$Z2 + error
+    df$Y0 = mu2 + beta1 * df$Z1 + beta2 * df$Z2 + error
+    return(df)
+}
+
+simulateMeanDifference <- function(df) {
+    ## df: a dataframe which contains df$assignment, labeled as "A" and "B"
+    ## and potential outcomes, labeled as "Y1" and "Y0"
+    
+    ## mean_difference: mean difference between 
+    ## treatment group and control group
+    mean_difference =  mean(df[df$assignment == "A", "Y1"])-  
+        mean(df[df$assignment == "B", "Y0"])
+}
+
