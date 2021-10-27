@@ -1,12 +1,17 @@
 library(carat)
 ### Refine the ADjBCD
 ## Randomize based on the target columns
-myAdjBCD <- function(df, targetCols, a = 2) {
-    Res <- AdjBCD(df[,targetCols], a = 2)
+myAdjBCD <- function(df, target_cols, a = 2) {
+    ## df: dataframe used for covariate adaptive design
+    ## target_cols: columns used for randomization
+    
+    ## assignment: treatment/control, labeled as "A"/"B"
+    ## strata: stratified based on target_cols
+    Res <- AdjBCD(df[,target_cols], a = 2)
     assignment = Res$assignments
     
     ## strata
-    smallDf = as.matrix(df[,targetCols])
+    smallDf = as.matrix(df[,target_cols])
     levelsNum = apply(smallDf, 2,function(x) length(unique(x)))
     culLevelsNum = cumprod(c(1,levelsNum))[1:length(levelsNum)]
     strata = (smallDf - 1) %*% culLevelsNum + 1
@@ -35,13 +40,14 @@ simulateDataMa2015 <- function(N, mu1, mu2, beta1, p1, beta2, p2) {
     return(df)
 }
 
-simulateMeanDifference <- function(df) {
-    ## df: a dataframe which contains df$assignment, labeled as "A" and "B"
+simulateMeanDifference <- function(df, assignment) {
+    ## df: a dataframe
+    ## assignment: treatment/control, labeled as "A" and "B"
     ## and potential outcomes, labeled as "Y1" and "Y0"
     
     ## mean_difference: mean difference between 
     ## treatment group and control group
-    mean_difference =  mean(df[df$assignment == "A", "Y1"])-  
-        mean(df[df$assignment == "B", "Y0"])
+    mean_difference =  mean(df[assignment == "A", "Y1"])-  
+        mean(df[assignment == "B", "Y0"])
 }
 
