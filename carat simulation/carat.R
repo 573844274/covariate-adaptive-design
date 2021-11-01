@@ -15,7 +15,7 @@ df$strata = design$strata
 ## ma2015
 patients_num = 100
 times = 1000
-df  = simulateDataMa2015(patients_num, 5, 5, 1, 0.5, 2, 0.3)
+df  = simulateDataMa2015(patients_num, 8, 5, 1, 0.5, 2, 0.3)
 mean_difference_adaptive = numeric(times)
 mean_difference_simple = numeric(times)
 mean_difference_complete = numeric(times)
@@ -36,3 +36,5 @@ for (i in 1:times) {
 var(mean_difference_adaptive)
 var(mean_difference_simple)
 var(mean_difference_complete)
+
+

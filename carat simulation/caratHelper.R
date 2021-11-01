@@ -33,10 +33,12 @@ simulateDataMa2015 <- function(N, mu1, mu2, beta1, p1, beta2, p2) {
     
     ## df: a dataframe of size N, containing Z1, Z2 and potential outcomes 
     df <- data.frame("Z1" = sample(c(1, 2), N, TRUE, c(p1, 1 - p1)),
-                     "Z2" = sample(c(1, 2), N, TRUE, c(p1, 1 - p2)))
+                     "Z2" = sample(c(1, 2), N, TRUE, c(p1, 1 - p2)),
+                     "X" = runif(N,max = 4))
     error = rnorm(N)
-    df$Y1 = mu1 + beta1 * df$Z1 + beta2 * df$Z2 + error
-    df$Y0 = mu2 + beta1 * df$Z1 + beta2 * df$Z2 + error
+    base = beta1 * df$Z1 + beta2 * df$Z2 + error
+    df$Y1 = mu1 + base + 1 * df$X  
+    df$Y0 = mu2 + base + 1 * df$X  
     return(df)
 }
 
